@@ -56,7 +56,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>br.ufscar.dc.compiladores.expr.parser.Principal</mainClass>
+              <mainClass>com.dc.ufscar.compiladores.semantico1.Principal</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>

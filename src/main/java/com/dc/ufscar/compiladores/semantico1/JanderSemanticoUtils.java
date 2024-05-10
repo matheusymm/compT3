@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import org.antlr.v4.runtime.Token;
 
+import com.dc.ufscar.compiladores.semantico1.JanderParser.Exp_aritmeticaContext;
 import com.dc.ufscar.compiladores.semantico1.JanderParser.FatorContext;
+import com.dc.ufscar.compiladores.semantico1.JanderParser.Fator_logicoContext;
 import com.dc.ufscar.compiladores.semantico1.JanderParser.ParcelaContext;
 import com.dc.ufscar.compiladores.semantico1.JanderParser.TermoContext;
+import com.dc.ufscar.compiladores.semantico1.JanderParser.Termo_logicoContext;
 
 public class JanderSemanticoUtils {
     public static List<String> errosSemanticos = new ArrayList<>();
@@ -126,5 +129,64 @@ public class JanderSemanticoUtils {
             return TabelaDeSimbolos.TipoJander.INVALIDO;
         }
         return tabela.verificar(nome);
+    }
+
+    public static TabelaDeSimbolos.TipoJander verificarTipo(TabelaDeSimbolos tabela, JanderParser.ExpressaoContext ctx) {
+        TabelaDeSimbolos.TipoJander ret = null;
+        for(Termo_logicoContext ta : ctx.termo_logico()) {
+            TabelaDeSimbolos.TipoJander aux = verificarTipo(tabela, ta);
+            if(ret == null) {
+                ret = aux;
+            } else if(verificarTipoCompativeL(tabela, aux, ret) && aux != TabelaDeSimbolos.TipoJander.INVALIDO) {
+                adicionarErroSemantico(ctx.getStart(), "Expressão " + ctx.getText() + "contém tipos incompatíveis");
+                ret = TabelaDeSimbolos.TipoJander.INVALIDO; 
+            }
+        }
+        return ret;
+    }
+
+    public static TabelaDeSimbolos.TipoJander verificarTipo(TabelaDeSimbolos tabela, JanderParser.Termo_logicoContext ctx) {
+        TabelaDeSimbolos.TipoJander ret = null;
+        for(Fator_logicoContext fa : ctx.fator_logico()) {
+            TabelaDeSimbolos.TipoJander aux = verificarTipo(tabela, fa);
+            if(ret == null) {
+                ret = aux;
+            } else if(verificarTipoCompativeL(tabela, aux, ret) && aux != TabelaDeSimbolos.TipoJander.INVALIDO) {
+                adicionarErroSemantico(ctx.getStart(), "Termo " + ctx.getText() + "contém tipos incompatíveis");
+                ret = TabelaDeSimbolos.TipoJander.INVALIDO; 
+            }
+        }
+        return ret;
+    }
+
+    public static TabelaDeSimbolos.TipoJander verificarTipo(TabelaDeSimbolos tabela, JanderParser.Fator_logicoContext ctx) {
+        if(ctx.parcela_logica() != null) {
+            return verificarTipo(tabela, ctx.parcela_logica());
+        }
+        return TabelaDeSimbolos.TipoJander.INVALIDO;
+    }   
+
+    public static TabelaDeSimbolos.TipoJander verificarTipo(TabelaDeSimbolos tabela, JanderParser.Parcela_logicaContext ctx) {
+        if(ctx.exp_relacional() != null) {
+            return verificarTipo(tabela, ctx.exp_relacional());
+        } else if(ctx.FALSO() != null || ctx.VERDADEIRO() != null) {
+            return TabelaDeSimbolos.TipoJander.LOGICO;
+        } else {
+            return TabelaDeSimbolos.TipoJander.INVALIDO;
+        }
+    }
+
+    public static TabelaDeSimbolos.TipoJander verificarTipo(TabelaDeSimbolos tabela, JanderParser.Exp_relacionalContext ctx) {
+        TabelaDeSimbolos.TipoJander ret = null;
+        for(Exp_aritmeticaContext ea : ctx.exp_aritmetica()) {
+            TabelaDeSimbolos.TipoJander aux = verificarTipo(tabela, ea);
+            if(ret == null) {
+                ret = aux;
+            } else if(verificarTipoCompativeL(tabela, aux, ret) && aux != TabelaDeSimbolos.TipoJander.INVALIDO) {
+                adicionarErroSemantico(ctx.getStart(), "Expressão " + ctx.getText() + "contém tipos incompatíveis");
+                ret = TabelaDeSimbolos.TipoJander.INVALIDO; 
+            }
+        }
+        return ret;
     }
 }
