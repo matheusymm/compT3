@@ -11,6 +11,19 @@ public class JanderSemantico extends JanderBaseVisitor<Void>{
         return super.visitPrograma(ctx);
     }
 
+    @Override
+    public Void visitDeclaracoes(JanderParser.DeclaracoesContext ctx) {
+        for(JanderParser.Declaracao_localContext decl : ) {
+            visitDeclaracao_local(decl);
+        }
+        return super.visitDeclaracoes(ctx);
+    }
+
+    @Override
+    public Void visitDecl_local_global(JanderParser.Decl_local_globalContext ctx) {
+        return super.visitDecl_local_global(ctx);
+    }
+
     @Override                               
     public Void visitDeclaracao_local(JanderParser.Declaracao_localContext ctx) {
         String nomeVar = ctx.IDENT().getText();

@@ -21,8 +21,8 @@ public class Principal {
             MyCustomErrorListener mcel = new MyCustomErrorListener(pw);
             parser.addErrorListener(mcel);
             ProgramaContext arvore = parser.programa();
-            JanderSemantico semantico = new JanderSemantico();
-            semantico.visitPrograma(arvore);
+            JanderSemantico js = new JanderSemantico();
+            js.visitPrograma(arvore);
             JanderSemanticoUtils.errosSemanticos.forEach(pw::println);
             pw.close();
         } catch (IOException ex) {
