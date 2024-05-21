@@ -28,7 +28,7 @@ public class JanderSemantico extends JanderBaseVisitor<Void> {
     public Void visitDeclaracao_local(JanderParser.Declaracao_localContext ctx) {
 
         if (ctx.variavel() != null) {
-            visitVariavel(ctx.variavel());
+            return visitVariavel(ctx.variavel());
         }
         if (ctx.IDENT() != null) {
 
@@ -84,30 +84,23 @@ public class JanderSemantico extends JanderBaseVisitor<Void> {
             default:
                 break;
         }
-        int count = 0;
 
         for (JanderParser.IdentificadorContext ident : ctx.identificador()) {
             String nomeVar = ident.getText();
 
             if (tabela.existe(nomeVar)) {
-                System.out.println(
-                        "erroDeclarando variável " + nomeVar + " tipo: " + tipoVar + " linha: " +
-                                ident.start.getLine()
-                                + " "
-                                + count);
-                count++;
-                JanderSemanticoUtils.adicionarErroSemantico(ident.start, "Variável " +
-                        nomeVar + " já existe");
+
+                JanderSemanticoUtils.adicionarErroSemantico(ident.start, "identificador  " +
+                        nomeVar + " ja declarado anteriormente");
             } else {
-                System.out.println(
-                        "Declarando variávelss " + nomeVar + " tipo: " + tipoVar + " linha: " +
-                                ident.start.getLine()
-                                + " "
-                                + count);
-                count++;
+
                 tabela.adicionar(nomeVar, tipoVar);
+                if (tipoVar == TipoJander.INVALIDO) {
+                    JanderSemanticoUtils.adicionarErroSemantico(ident.start, "tipo " + strTipoVar + " nao declarado");
+                }
             }
         }
+        // na duvida tira (:
         return super.visitVariavel(ctx);
     }
 
@@ -123,7 +116,7 @@ public class JanderSemantico extends JanderBaseVisitor<Void> {
                 TipoJander tipoVar = tabela.verificar(nomeVar);
                 if (tipoVar != tipoExpressao) {
                     JanderSemanticoUtils.adicionarErroSemantico(ctx.identificador().start,
-                            "Atribuição de tipos incompatíveis");
+                            "tipo" + ctx.expressao().getText() + "de tipos incompatíveis");
                 }
             }
         }
@@ -136,15 +129,31 @@ public class JanderSemantico extends JanderBaseVisitor<Void> {
             String nomeVar = ident.getText();
             if (!tabela.existe(nomeVar)) {
                 JanderSemanticoUtils.adicionarErroSemantico(ident.start,
-                        "Variável " + nomeVar + " não foi declarada antes do uso");
+                        "identificador " + nomeVar + " nao declarado");
             }
         }
         return super.visitCmdLeia(ctx);
     }
 
+    // @Override
+    // public Void visitExp_aritmetica(JanderParser.Exp_aritmeticaContext ctx) {
+
+    // JanderSemanticoUtils.verificarTipo(tabela, ctx);
+    // return super.visitExp_aritmetica(ctx);
+    // }
+
     @Override
-    public Void visitExp_aritmetica(JanderParser.Exp_aritmeticaContext ctx) {
-        JanderSemanticoUtils.verificarTipo(tabela, ctx);
-        return super.visitExp_aritmetica(ctx);
+    public Void visitParcela_nao_unario(JanderParser.Parcela_nao_unarioContext ctx) {
+        if (ctx.identificador() != null) {
+            // System.out.println("Texto : " + ctx.getText());
+
+            JanderSemanticoUtils.verificarTipo(tabela, ctx);
+        } else if (ctx.CADEIA() != null) {
+            // System.out.println("Texto : " + ctx.getText());
+
+        }
+
+        return super.visitParcela_nao_unario(ctx);
     }
+
 }

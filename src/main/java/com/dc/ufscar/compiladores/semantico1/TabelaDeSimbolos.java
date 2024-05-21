@@ -5,9 +5,9 @@ import java.util.Map;
 
 public class TabelaDeSimbolos {
     public enum TipoJander {
-        LITERAL, 
-        INTEIRO, 
-        REAL, 
+        LITERAL,
+        INTEIRO,
+        REAL,
         LOGICO,
         INVALIDO
     }
@@ -15,6 +15,7 @@ public class TabelaDeSimbolos {
     class EntradaTabelaDeSimbolos {
         String nome;
         TipoJander tipo;
+        // boolean constante ?
 
         private EntradaTabelaDeSimbolos(String nome, TipoJander tipo) {
             this.nome = nome;
@@ -23,7 +24,7 @@ public class TabelaDeSimbolos {
     }
 
     private final Map<String, EntradaTabelaDeSimbolos> tabela;
-    
+
     public TabelaDeSimbolos() {
         this.tabela = new HashMap<>();
     }

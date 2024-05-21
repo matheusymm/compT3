@@ -14,8 +14,12 @@ public class Principal {
     public static void main(String[] args) {
         try {
             CharStream cs = CharStreams.fromFileName(args[0]);
+            // CharStream cs =
+            // CharStreams.fromFileName("./entrada/1.algoritmo_2-2_apostila_LA.txt");
             JanderLexer lex = new JanderLexer(cs);
             PrintWriter pw = new PrintWriter(args[1]);
+            // PrintWriter pw = new PrintWriter("1.out");
+
             CommonTokenStream tokens = new CommonTokenStream(lex);
             JanderParser parser = new JanderParser(tokens);
             MyCustomErrorListener mcel = new MyCustomErrorListener(pw);
@@ -24,6 +28,7 @@ public class Principal {
             JanderSemantico js = new JanderSemantico();
             js.visitPrograma(arvore);
             JanderSemanticoUtils.errosSemanticos.forEach(pw::println);
+            pw.println("Fim da compilacao");
             pw.close();
         } catch (IOException ex) {
             ex.printStackTrace();
