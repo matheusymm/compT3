@@ -22,8 +22,10 @@ public class JanderSemanticoUtils {
 
     public static boolean verificarTipoCompativeL(TabelaDeSimbolos tabela, TabelaDeSimbolos.TipoJander tipo1,
             TabelaDeSimbolos.TipoJander tipo2) {
-        TabelaDeSimbolos.TipoJander aux1 = tabela.verificar(tipo1.toString()),
-                aux2 = tabela.verificar(tipo2.toString());
+
+        TabelaDeSimbolos.TipoJander aux1 = tabela.verificar(tipo1.toString());
+        TabelaDeSimbolos.TipoJander aux2 = tabela.verificar(tipo2.toString());
+
         if (aux1 == aux2 || aux1 == TabelaDeSimbolos.TipoJander.REAL && aux2 == TabelaDeSimbolos.TipoJander.INTEIRO
                 || aux1 == TabelaDeSimbolos.TipoJander.INTEIRO && aux2 == TabelaDeSimbolos.TipoJander.REAL) {
             return true;
@@ -36,9 +38,7 @@ public class JanderSemanticoUtils {
             JanderParser.Exp_aritmeticaContext ctx) {
         TabelaDeSimbolos.TipoJander ret = null;
         for (TermoContext ta : ctx.termo()) {
-            System.out.println("Tipo: " + ta.getText());
             TabelaDeSimbolos.TipoJander aux = verificarTipo(tabela, ta);
-            System.out.println("Tipo: " + aux.name());
             if (ret == null) {
                 ret = aux;
             } else if (verificarTipoCompativeL(tabela, aux, ret) && aux != TabelaDeSimbolos.TipoJander.INVALIDO) {
@@ -55,7 +55,7 @@ public class JanderSemanticoUtils {
             TabelaDeSimbolos.TipoJander aux = verificarTipo(tabela, fa);
             if (ret == null) {
                 ret = aux;
-            } else if (verificarTipoCompativeL(tabela, aux, ret) && aux != TabelaDeSimbolos.TipoJander.INVALIDO) {
+            } else if (aux != TabelaDeSimbolos.TipoJander.INVALIDO && verificarTipoCompativeL(tabela, aux, ret)) {
                 adicionarErroSemantico(ctx.getStart(), "Termo " + ctx.getText() + "contém tipos incompatíveis");
                 ret = TabelaDeSimbolos.TipoJander.INVALIDO;
             }
@@ -69,7 +69,7 @@ public class JanderSemanticoUtils {
             TabelaDeSimbolos.TipoJander aux = verificarTipo(tabela, pa);
             if (ret == null) {
                 ret = aux;
-            } else if (verificarTipoCompativeL(tabela, aux, ret) && aux != TabelaDeSimbolos.TipoJander.INVALIDO) {
+            } else if (aux != TabelaDeSimbolos.TipoJander.INVALIDO && verificarTipoCompativeL(tabela, aux, ret)) {
                 adicionarErroSemantico(ctx.getStart(), "Termo " + ctx.getText() + "contém tipos incompatíveis");
                 ret = TabelaDeSimbolos.TipoJander.INVALIDO;
             }
@@ -144,7 +144,6 @@ public class JanderSemanticoUtils {
             JanderParser.ExpressaoContext ctx) {
         TabelaDeSimbolos.TipoJander ret = null;
         for (Termo_logicoContext ta : ctx.termo_logico()) {
-            System.out.print("Termo: " + ta.getText() + "\n");
             TabelaDeSimbolos.TipoJander aux = verificarTipo(tabela, ta);
             if (ret == null) {
                 ret = aux;

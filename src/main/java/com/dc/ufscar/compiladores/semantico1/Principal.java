@@ -13,11 +13,12 @@ import org.antlr.v4.runtime.CharStreams;
 public class Principal {
     public static void main(String[] args) {
         try {
-            // CharStream cs = CharStreams.fromFileName(args[0]);
-            CharStream cs = CharStreams.fromFileName("entrada/2.algoritmo_2-4_apostila_LA.txt");
+            CharStream cs = CharStreams.fromFileName(args[0]);
+            // CharStream cs =
+            // CharStreams.fromFileName("entrada/2.algoritmo_2-4_apostila_LA.txt");
             JanderLexer lex = new JanderLexer(cs);
-            // PrintWriter pw = new PrintWriter(args[1]);
-            PrintWriter pw = new PrintWriter("2.out");
+            PrintWriter pw = new PrintWriter(args[1]);
+            // PrintWriter pw = new PrintWriter("2.out");
 
             CommonTokenStream tokens = new CommonTokenStream(lex);
             JanderParser parser = new JanderParser(tokens);

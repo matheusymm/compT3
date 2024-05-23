@@ -106,6 +106,7 @@ public class JanderSemantico extends JanderBaseVisitor<Void> {
 
     @Override
     public Void visitCmdAtribuicao(JanderParser.CmdAtribuicaoContext ctx) {
+        System.out.println("exp " + ctx.expressao().getText() + " +" + ctx.identificador().getText());
         TipoJander tipoExpressao = JanderSemanticoUtils.verificarTipo(tabela, ctx.expressao());
         if (tipoExpressao != TipoJander.INVALIDO) {
             String nomeVar = ctx.identificador().getText();
@@ -123,17 +124,17 @@ public class JanderSemantico extends JanderBaseVisitor<Void> {
         return super.visitCmdAtribuicao(ctx);
     }
 
-    // @Override
-    // public Void visitCmdLeia(JanderParser.CmdLeiaContext ctx) {
-    // for (JanderParser.IdentificadorContext ident : ctx.identificador()) {
-    // String nomeVar = ident.getText();
-    // if (!tabela.existe(nomeVar)) {
-    // JanderSemanticoUtils.adicionarErroSemantico(ident.start,
-    // "identificador " + nomeVar + " nao declarado");
-    // }
-    // }
-    // return super.visitCmdLeia(ctx);
-    // }
+    @Override
+    public Void visitCmdLeia(JanderParser.CmdLeiaContext ctx) {
+        for (JanderParser.IdentificadorContext ident : ctx.identificador()) {
+            String nomeVar = ident.getText();
+            if (!tabela.existe(nomeVar)) {
+                JanderSemanticoUtils.adicionarErroSemantico(ident.start,
+                        "identificador " + nomeVar + " nao declarado");
+            }
+        }
+        return super.visitCmdLeia(ctx);
+    }
 
     // @Override
     // public Void visitExp_aritmetica(JanderParser.Exp_aritmeticaContext ctx) {
