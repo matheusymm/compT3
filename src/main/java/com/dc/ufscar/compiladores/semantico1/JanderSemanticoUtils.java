@@ -36,6 +36,7 @@ public class JanderSemanticoUtils {
             JanderParser.Exp_aritmeticaContext ctx) {
         TabelaDeSimbolos.TipoJander ret = null;
         for (TermoContext ta : ctx.termo()) {
+            System.out.println("Tipo: " + ta.getText());
             TabelaDeSimbolos.TipoJander aux = verificarTipo(tabela, ta);
             System.out.println("Tipo: " + aux.name());
             if (ret == null) {
@@ -143,6 +144,7 @@ public class JanderSemanticoUtils {
             JanderParser.ExpressaoContext ctx) {
         TabelaDeSimbolos.TipoJander ret = null;
         for (Termo_logicoContext ta : ctx.termo_logico()) {
+            System.out.print("Termo: " + ta.getText() + "\n");
             TabelaDeSimbolos.TipoJander aux = verificarTipo(tabela, ta);
             if (ret == null) {
                 ret = aux;

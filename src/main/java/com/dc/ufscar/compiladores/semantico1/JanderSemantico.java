@@ -123,17 +123,17 @@ public class JanderSemantico extends JanderBaseVisitor<Void> {
         return super.visitCmdAtribuicao(ctx);
     }
 
-    @Override
-    public Void visitCmdLeia(JanderParser.CmdLeiaContext ctx) {
-        for (JanderParser.IdentificadorContext ident : ctx.identificador()) {
-            String nomeVar = ident.getText();
-            if (!tabela.existe(nomeVar)) {
-                JanderSemanticoUtils.adicionarErroSemantico(ident.start,
-                        "identificador " + nomeVar + " nao declarado");
-            }
-        }
-        return super.visitCmdLeia(ctx);
-    }
+    // @Override
+    // public Void visitCmdLeia(JanderParser.CmdLeiaContext ctx) {
+    // for (JanderParser.IdentificadorContext ident : ctx.identificador()) {
+    // String nomeVar = ident.getText();
+    // if (!tabela.existe(nomeVar)) {
+    // JanderSemanticoUtils.adicionarErroSemantico(ident.start,
+    // "identificador " + nomeVar + " nao declarado");
+    // }
+    // }
+    // return super.visitCmdLeia(ctx);
+    // }
 
     // @Override
     // public Void visitExp_aritmetica(JanderParser.Exp_aritmeticaContext ctx) {
