@@ -38,6 +38,7 @@ public class TabelaDeSimbolos {
     }
 
     public TipoJander verificar(String nome) {
+
         return tabela.get(nome).tipo;
     }
 }
