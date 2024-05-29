@@ -33,7 +33,6 @@ public class JanderSemantico extends JanderBaseVisitor<Void> {
         if (ctx.IDENT() != null) {
 
             String nomeVar = ctx.IDENT().getText();
-            System.out.println("Declarando variável " + nomeVar);
             String strTipoVar = ctx.tipo_basico().getText();
             TipoJander tipoVar = TipoJander.INVALIDO;
             switch (strTipoVar) {
@@ -56,7 +55,6 @@ public class JanderSemantico extends JanderBaseVisitor<Void> {
                 JanderSemanticoUtils.adicionarErroSemantico(ctx.IDENT().getSymbol(),
                         "Variável " + nomeVar + " já existe");
             } else {
-                System.out.println("Declarando local variável " + nomeVar + " tipo: " + tipoVar);
                 tabela.adicionar(nomeVar, tipoVar);
             }
         }
@@ -106,14 +104,12 @@ public class JanderSemantico extends JanderBaseVisitor<Void> {
 
     @Override
     public Void visitCmdAtribuicao(JanderParser.CmdAtribuicaoContext ctx) {
-        System.out.println("exp " + ctx.expressao().getText() + " + " + ctx.identificador().getText());
 
         JanderSemanticoUtils.setNomeVarAtrib(ctx.identificador().getText());
         TipoJander tipoExpressao = JanderSemanticoUtils.verificarTipo(tabela, ctx.expressao());
 
         if (tipoExpressao != TipoJander.INVALIDO) {
             String nomeVar = ctx.identificador().getText();
-            System.out.println("nomeVar " + nomeVar);
             if (!tabela.existe(nomeVar)) {
                 JanderSemanticoUtils.adicionarErroSemantico(ctx.identificador().start,
                         "identificador " + nomeVar + " nao declarado");
@@ -158,11 +154,9 @@ public class JanderSemantico extends JanderBaseVisitor<Void> {
     @Override
     public Void visitParcela_nao_unario(JanderParser.Parcela_nao_unarioContext ctx) {
         if (ctx.identificador() != null) {
-            // System.out.println("Texto : " + ctx.getText());
 
             JanderSemanticoUtils.verificarTipo(tabela, ctx);
         } else if (ctx.CADEIA() != null) {
-            System.out.println("Texto : " + ctx.getText());
 
         }
 
@@ -172,12 +166,9 @@ public class JanderSemantico extends JanderBaseVisitor<Void> {
     @Override
     public Void visitParcela_unario(JanderParser.Parcela_unarioContext ctx) {
         if (ctx.identificador() != null) {
-            // System.out.println("Texto : " + ctx.getText());
             JanderSemanticoUtils.verificarTipo(tabela, ctx);
         } else if (ctx.NUM_INT() != null) {
-            // System.out.println("Texto : " + ctx.getText());
         } else if (ctx.NUM_REAL() != null) {
-            // System.out.println("Texto : " + ctx.getText());
         }
 
         return super.visitParcela_unario(ctx);

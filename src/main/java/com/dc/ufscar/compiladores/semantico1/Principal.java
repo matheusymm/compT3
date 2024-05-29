@@ -15,10 +15,10 @@ public class Principal {
         try {
             CharStream cs = CharStreams.fromFileName(args[0]);
             // CharStream cs =
-            // CharStreams.fromFileName("entrada/9.algoritmo_6-9_apostila_LA.txt");
+            // CharStreams.fromFileName("entrada/3.algoritmo_3-1_apostila_LA.txt");
             JanderLexer lex = new JanderLexer(cs);
             PrintWriter pw = new PrintWriter(args[1]);
-            // PrintWriter pw = new PrintWriter("9.out");
+            // PrintWriter pw = new PrintWriter("3.out");
 
             CommonTokenStream tokens = new CommonTokenStream(lex);
             JanderParser parser = new JanderParser(tokens);

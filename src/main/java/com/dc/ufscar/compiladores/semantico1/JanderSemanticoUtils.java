@@ -5,6 +5,7 @@ import java.util.List;
 import org.antlr.v4.runtime.Token;
 
 import com.dc.ufscar.compiladores.semantico1.JanderParser.Exp_aritmeticaContext;
+import com.dc.ufscar.compiladores.semantico1.JanderParser.ExpressaoContext;
 import com.dc.ufscar.compiladores.semantico1.JanderParser.FatorContext;
 import com.dc.ufscar.compiladores.semantico1.JanderParser.Fator_logicoContext;
 import com.dc.ufscar.compiladores.semantico1.JanderParser.ParcelaContext;
@@ -32,13 +33,14 @@ public class JanderSemanticoUtils {
     public static boolean verificarTipoCompativeL(TabelaDeSimbolos tabela, TabelaDeSimbolos.TipoJander tipo1,
             TabelaDeSimbolos.TipoJander tipo2) {
 
-        System.out.println("tipo1: " + tipo1 + " tipo2: " + tipo2);
-        // TabelaDeSimbolos.TipoJander aux1 = tabela.verificar(tipo1.toString());
-        // TabelaDeSimbolos.TipoJander aux2 = tabela.verificar(tipo2.toString());
         TabelaDeSimbolos.TipoJander aux1 = tipo1;
         TabelaDeSimbolos.TipoJander aux2 = tipo2;
-        if (aux1 == aux2 || aux1 == TabelaDeSimbolos.TipoJander.REAL && aux2 == TabelaDeSimbolos.TipoJander.INTEIRO
-                || aux1 == TabelaDeSimbolos.TipoJander.INTEIRO && aux2 == TabelaDeSimbolos.TipoJander.REAL) {
+        // Talvez refatorar essa condição, vai ser dificil fazer manuntentação dela
+        if (aux1 == aux2 ||
+                aux1 == TabelaDeSimbolos.TipoJander.REAL && aux2 == TabelaDeSimbolos.TipoJander.INTEIRO ||
+                aux1 == TabelaDeSimbolos.TipoJander.INTEIRO && aux2 == TabelaDeSimbolos.TipoJander.REAL ||
+                aux1 == TabelaDeSimbolos.TipoJander.LOGICO && aux2 == TabelaDeSimbolos.TipoJander.REAL ||
+                aux1 == TabelaDeSimbolos.TipoJander.REAL && aux2 == TabelaDeSimbolos.TipoJander.LOGICO) {
             return false;
         } else {
             return true;
@@ -51,7 +53,6 @@ public class JanderSemanticoUtils {
 
         for (TermoContext ta : ctx.termo()) {
             TabelaDeSimbolos.TipoJander aux = verificarTipo(tabela, ta);
-            System.out.println("axuExpArit: " + aux + " ta: " + ta.getText());
 
             if (ret == null) {
                 ret = aux;
@@ -69,11 +70,10 @@ public class JanderSemanticoUtils {
         TabelaDeSimbolos.TipoJander ret = null;
         for (FatorContext fa : ctx.fator()) {
             TabelaDeSimbolos.TipoJander aux = verificarTipo(tabela, fa);
-            System.out.println("axuTermo: " + aux);
             if (ret == null) {
                 ret = aux;
             } else if (aux != TabelaDeSimbolos.TipoJander.INVALIDO && verificarTipoCompativeL(tabela, aux, ret)) {
-                adicionarErroSemantico(ctx.getStart(), "Termo " + ctx.getText() + "contém tipos incompatíveis");
+                adicionarErroSemantico(ctx.getStart(), "TermoT " + ctx.getText() + "contém tipos incompatíveis");
                 ret = TabelaDeSimbolos.TipoJander.INVALIDO;
             }
         }
@@ -84,11 +84,10 @@ public class JanderSemanticoUtils {
         TabelaDeSimbolos.TipoJander ret = null;
         for (ParcelaContext pa : ctx.parcela()) {
             TabelaDeSimbolos.TipoJander aux = verificarTipo(tabela, pa);
-            System.out.println("axuFator: " + aux);
             if (ret == null) {
                 ret = aux;
             } else if (aux != TabelaDeSimbolos.TipoJander.INVALIDO && verificarTipoCompativeL(tabela, aux, ret)) {
-                adicionarErroSemantico(ctx.getStart(), "Termo " + ctx.getText() + "contém tipos incompatíveis");
+                adicionarErroSemantico(ctx.getStart(), "Fator " + ctx.getText() + "contém tipos incompatíveis");
                 ret = TabelaDeSimbolos.TipoJander.INVALIDO;
             }
         }
@@ -118,6 +117,7 @@ public class JanderSemanticoUtils {
 
     public static TabelaDeSimbolos.TipoJander verificarTipo(TabelaDeSimbolos tabela,
             JanderParser.Parcela_unarioContext ctx) {
+
         if (ctx.identificador() != null) {
             String nome = ctx.identificador().getText();
             if (!tabela.existe(nome)) {
@@ -129,6 +129,18 @@ public class JanderSemanticoUtils {
             return TabelaDeSimbolos.TipoJander.INTEIRO;
         } else if (ctx.NUM_REAL() != null) {
             return TabelaDeSimbolos.TipoJander.REAL;
+        } else if (ctx.expressao() != null) {
+            TabelaDeSimbolos.TipoJander ret = null;
+            for (ExpressaoContext ta : ctx.expressao()) {
+                TabelaDeSimbolos.TipoJander aux = verificarTipo(tabela, ta);
+                if (ret == null) {
+                    ret = aux;
+                } else if (aux != TabelaDeSimbolos.TipoJander.INVALIDO && verificarTipoCompativeL(tabela, aux, ret)) {
+                    adicionarErroSemantico(ctx.getStart(), "atribuicaoParUnit nao compativel para " + ta.getText());
+                    ret = TabelaDeSimbolos.TipoJander.INVALIDO;
+                }
+            }
+            return ret;
         } else {
             return TabelaDeSimbolos.TipoJander.INVALIDO;
         }
@@ -139,12 +151,7 @@ public class JanderSemanticoUtils {
         if (ctx.identificador() != null) {
             return verificarTipo(tabela, ctx.identificador().getText());
         } else if (ctx.CADEIA() != null) {
-            // String nome = ctx.CADEIA().getText();
-            // if (!tabela.existe(nome)) {
-            // adicionarErroSemantico(ctx.getStart(), "Variável " + nome + " não foi
-            // declarada antes do uso");
-            // return TabelaDeSimbolos.TipoJander.INVALIDO;
-            // }
+
             return TabelaDeSimbolos.TipoJander.LITERAL;
         } else {
             return TabelaDeSimbolos.TipoJander.INVALIDO;
@@ -164,7 +171,6 @@ public class JanderSemanticoUtils {
         TabelaDeSimbolos.TipoJander ret = null;
         for (Termo_logicoContext ta : ctx.termo_logico()) {
             TabelaDeSimbolos.TipoJander aux = verificarTipo(tabela, ta);
-            System.out.println("axuExp: " + aux + " ta: " + ta.getText());
 
             if (ret == null) {
                 ret = aux;
@@ -184,8 +190,7 @@ public class JanderSemanticoUtils {
             if (ret == null) {
                 ret = aux;
             } else if (aux != TabelaDeSimbolos.TipoJander.INVALIDO && verificarTipoCompativeL(tabela, aux, ret)) {
-                System.out.println("auxincopat: " + aux + " retincopat: " + ret);
-                adicionarErroSemantico(ctx.getStart(), "Termo " + ctx.getText() + "contém tipos incompatíveis");
+                adicionarErroSemantico(ctx.getStart(), "TermoLogico " + ctx.getText() + "contém tipos incompatíveis");
                 ret = TabelaDeSimbolos.TipoJander.INVALIDO;
             }
         }
@@ -195,7 +200,6 @@ public class JanderSemanticoUtils {
     public static TabelaDeSimbolos.TipoJander verificarTipo(TabelaDeSimbolos tabela,
             JanderParser.Fator_logicoContext ctx) {
         if (ctx.parcela_logica() != null) {
-            System.out.println("fatorlogico->: " + ctx.parcela_logica().getText());
             return verificarTipo(tabela, ctx.parcela_logica());
         }
 
