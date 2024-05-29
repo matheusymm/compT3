@@ -20,6 +20,7 @@ public class JanderSemanticoUtils {
         nomeVarAtrib.add(String.format("%s", nome));
     }
 
+    // Falta chamar a função pra cleanar a lista
     public static void voidRemoveVarAtrib() {
         nomeVarAtrib.clear();
     }
